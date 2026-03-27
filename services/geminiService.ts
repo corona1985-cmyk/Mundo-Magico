@@ -2,8 +2,10 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { MagicPet } from "@/types";
 
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+
 export const generatePetImage = async (pet: MagicPet, drawingBase64?: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  const ai = new GoogleGenAI({ apiKey });
   
   // Prompt optimized to follow the child's drawing shapes but polish it to 3D Pixar style
   // We use Google Search to find real animal references for better realism
@@ -62,7 +64,7 @@ export const generatePetImage = async (pet: MagicPet, drawingBase64?: string): P
 };
 
 export const generatePetStory = async (pet: MagicPet): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  const ai = new GoogleGenAI({ apiKey });
   const prompt = `Escribe un cuento muy corto (3 frases) para un niño de 5 años sobre una mascota mágica llamada ${pet.name}. 
     Es un ${pet.baseAnimal} con poderes de ${pet.element}. Su personalidad es ${pet.personality}. 
     Asegúrate de que sea una historia feliz y mágica en español.`;
@@ -80,7 +82,7 @@ export const generatePetStory = async (pet: MagicPet): Promise<string> => {
 };
 
 export const generatePetMetadata = async (prompt: string): Promise<{ name: string, baseAnimal: string, element: string, personality: string }> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  const ai = new GoogleGenAI({ apiKey });
   
   try {
     const response = await ai.models.generateContent({
@@ -112,7 +114,7 @@ export const generatePetMetadata = async (prompt: string): Promise<{ name: strin
 };
 
 export const speakStory = async (text: string): Promise<void> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  const ai = new GoogleGenAI({ apiKey });
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
