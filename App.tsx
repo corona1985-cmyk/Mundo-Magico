@@ -5,10 +5,9 @@ import { BASE_ANIMALS, ELEMENTS, LOADING_MESSAGES, COLORS_BY_NUMBER, GAME_LEVELS
 import MagicButton from '@/components/MagicButton';
 import ColorByNumber from '@/components/ColorByNumber';
 import PlatformerGame from '@/components/PlatformerGame';
-import { generatePetImage, generatePetStory, speakStory, generatePetMetadata } from '@/services/geminiService';
 import { soundService } from '@/src/services/soundService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, Sparkles, Wand2, Palette, Gamepad2, ArrowLeft, Camera, BookOpen } from 'lucide-react';
+import { Volume2, VolumeX, Wand2, BookOpen } from 'lucide-react';
 
 const SparkleTrail: React.FC = () => {
   const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number }[]>([]);
@@ -43,9 +42,18 @@ const SparkleTrail: React.FC = () => {
   );
 };
 
+const buildLocalStory = (pet: MagicPet): string => {
+  const adventures = [
+    `descubrio un bosque encantado donde todo brillaba con energia de ${pet.element.toLowerCase()}`,
+    `ayudo a sus amigos con un hechizo secreto de ${pet.element.toLowerCase()}`,
+    `encontro una puerta magica que solo se abre con valentia y alegria`,
+  ];
+  const randomAdventure = adventures[Math.floor(Math.random() * adventures.length)];
+  return `Habia una vez ${pet.name}, un ${pet.baseAnimal} con poderes de ${pet.element}. Un dia ${randomAdventure}. Desde entonces, ${pet.name} cuida Mundo Magico con una gran sonrisa.`;
+};
+
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>('HOME');
-  const [aiPrompt, setAiPrompt] = useState('');
   const [pet, setPet] = useState<MagicPet>({
     name: '',
     baseAnimal: '',
@@ -108,25 +116,13 @@ const App: React.FC = () => {
     const currentPet = { ...pet, imageUrl: drawing };
     setPet(currentPet);
 
-    try {
-      const [aiImageUrl, story] = await Promise.all([
-        generatePetImage(pet, drawing),
-        generatePetStory(pet)
-      ]);
-      
-      // We keep the drawing as the primary image for the game if the user prefers,
-      // but we'll show the AI version in the result.
-      // Actually, the user wants to play with THEIR colored pet.
-      const finalPet = { ...currentPet, story, aiImageUrl };
-      setPet(finalPet);
-      setGallery(prev => [finalPet, ...prev]);
-      setState('RESULT');
-    } catch (error) {
-      console.error(error);
-      alert("¡Ups! La magia está descansando. Intenta de nuevo en un momento.");
-    } finally {
-      setLoading(false);
-    }
+    // Simulate a short magical transition without external services.
+    await new Promise(resolve => setTimeout(resolve, 900));
+    const finalPet = { ...currentPet, story: buildLocalStory(currentPet) };
+    setPet(finalPet);
+    setGallery(prev => [finalPet, ...prev]);
+    setState('RESULT');
+    setLoading(false);
   };
 
   const handleDownload = () => {
@@ -139,9 +135,18 @@ const App: React.FC = () => {
 
   const handleSpeak = async () => {
     if (!pet.story || isSpeaking) return;
+    if (!('speechSynthesis' in window)) return;
+
+    const utterance = new SpeechSynthesisUtterance(pet.story);
+    utterance.lang = 'es-ES';
+    utterance.rate = 0.95;
+    utterance.pitch = 1.1;
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    window.speechSynthesis.cancel();
     setIsSpeaking(true);
-    await speakStory(pet.story);
-    setTimeout(() => setIsSpeaking(false), 10000);
+    window.speechSynthesis.speak(utterance);
   };
 
   const renderHome = () => (
@@ -161,9 +166,6 @@ const App: React.FC = () => {
       <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
         <MagicButton onClick={() => setState('SELECT_TEMPLATE')} variant="primary" className="text-xl md:text-3xl px-8 md:px-16 py-4 md:py-8">
           ¡A CREAR! 🚀
-        </MagicButton>
-        <MagicButton onClick={() => setState('AI_GENERATE')} variant="accent" className="text-xl md:text-3xl px-8 md:px-16 py-4 md:py-8">
-          IA MÁGICA 🤖
         </MagicButton>
         {gallery.length > 0 && (
           <MagicButton onClick={() => setState('GALLERY')} variant="secondary" className="text-lg md:text-xl px-6 md:px-12">
@@ -281,7 +283,7 @@ const App: React.FC = () => {
         <div className="absolute -top-4 -left-4 md:-top-8 md:-left-8 w-12 h-12 md:w-24 md:h-24 bg-indigo-500 rounded-full flex items-center justify-center text-2xl md:text-5xl shadow-2xl animate-bounce z-20">✨</div>
         <div className="overflow-hidden rounded-[1.5rem] md:rounded-[3rem] shadow-inner border-[4px] md:border-[6px] border-white ring-2 md:ring-4 ring-indigo-50 mx-auto max-w-[300px] md:max-w-[400px]">
            <img 
-              src={pet.aiImageUrl || pet.imageUrl} 
+              src={pet.imageUrl} 
               alt={pet.name} 
               className={`w-full aspect-square object-cover transform transition-all duration-1000 ${interactionEmoji ? 'scale-110 rotate-3' : 'scale-100 hover:scale-105'}`}
            />
@@ -417,49 +419,6 @@ const App: React.FC = () => {
     </div>
   );
 
-  const renderAIGenerate = () => (
-    <div className="max-w-2xl mx-auto p-4 md:p-8 bg-white/90 backdrop-blur-xl rounded-[2rem] md:rounded-[3rem] shadow-2xl border-4 border-indigo-100 text-center h-full flex flex-col overflow-hidden">
-      <h2 className="text-2xl md:text-5xl font-black text-indigo-700 mb-4 uppercase tracking-tighter shrink-0">IA MÁGICA</h2>
-      <p className="text-lg md:text-2xl text-indigo-400 mb-6 font-bold shrink-0">Describe a tu mascota ideal y la IA la creará por ti</p>
-      
-      <textarea
-        value={aiPrompt}
-        onChange={(e) => setAiPrompt(e.target.value)}
-        placeholder="Ej: Un zorro de fuego que vive en las nubes y es muy valiente..."
-        className="w-full flex-1 p-4 md:p-8 text-lg md:text-2xl rounded-[1.5rem] md:rounded-[2rem] border-4 border-indigo-50 focus:border-indigo-400 bg-indigo-50/30 outline-none transition-all placeholder:text-indigo-200 mb-6 resize-none font-bold"
-      />
-
-      <div className="flex flex-row gap-4 justify-center shrink-0">
-        <button onClick={() => setState('HOME')} className="text-lg md:text-2xl font-black text-indigo-300 hover:text-indigo-600 transition-colors uppercase tracking-widest">Atrás</button>
-        <MagicButton 
-          onClick={async () => {
-            if (!aiPrompt) return;
-            setLoading(true);
-            setLoadingMsg("La IA está imaginando a tu mascota...");
-            try {
-              const metadata = await generatePetMetadata(aiPrompt);
-              setPet({
-                name: metadata.name,
-                baseAnimal: metadata.baseAnimal,
-                element: metadata.element,
-                personality: metadata.personality
-              });
-              setState('CREATOR');
-            } catch (error) {
-              alert("La IA está cansada, intenta de nuevo.");
-            } finally {
-              setLoading(false);
-            }
-          }} 
-          variant="accent" 
-          className="text-xl md:text-3xl px-8 md:px-12 py-3 md:py-4"
-        >
-          ¡IMAGINAR! ✨
-        </MagicButton>
-      </div>
-    </div>
-  );
-
   const renderGame = () => (
     <div className="max-w-full mx-auto p-1 md:p-4 animate-fade-in h-full flex flex-col overflow-hidden">
       <div className="flex justify-between items-center mb-2 md:mb-4 shrink-0">
@@ -530,7 +489,6 @@ const App: React.FC = () => {
             {state === 'GALLERY' && renderGallery()}
             {state === 'LEVEL_SELECT' && renderLevelSelect()}
             {state === 'GAME' && renderGame()}
-            {state === 'AI_GENERATE' && renderAIGenerate()}
           </>
         )}
       </main>

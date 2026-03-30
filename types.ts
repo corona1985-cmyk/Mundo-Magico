@@ -5,8 +5,7 @@ export type AppState =
   | 'RESULT'
   | 'GALLERY'
   | 'GAME'
-  | 'LEVEL_SELECT'
-  | 'AI_GENERATE';
+  | 'LEVEL_SELECT';
 
 export interface NumberPosition {
   x: number;
@@ -36,7 +35,6 @@ export interface MagicPet {
   element: string;
   personality: string;
   imageUrl?: string;
-  aiImageUrl?: string;
   story?: string;
 }
 
