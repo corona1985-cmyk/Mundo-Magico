@@ -1,4 +1,4 @@
-package com.mundomagico.app;
+package com.mundom.creatumascota;
 
 import com.getcapacitor.BridgeActivity;
 

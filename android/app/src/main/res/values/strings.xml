@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Mundo Magico</string>
-    <string name="title_activity_main">Mundo Magico</string>
-    <string name="package_name">com.mundomagico.app</string>
-    <string name="custom_url_scheme">com.mundomagico.app</string>
+    <string name="app_name">Mundo M. Crea tu mascota</string>
+    <string name="title_activity_main">Mundo M. Crea tu mascota</string>
+    <string name="package_name">com.mundom.creatumascota</string>
+    <string name="custom_url_scheme">com.mundom.creatumascota</string>
 </resources>

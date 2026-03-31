@@ -49,7 +49,7 @@ const buildLocalStory = (pet: MagicPet): string => {
     `encontro una puerta magica que solo se abre con valentia y alegria`,
   ];
   const randomAdventure = adventures[Math.floor(Math.random() * adventures.length)];
-  return `Habia una vez ${pet.name}, un ${pet.baseAnimal} con poderes de ${pet.element}. Un dia ${randomAdventure}. Desde entonces, ${pet.name} cuida Mundo Magico con una gran sonrisa.`;
+  return `Habia una vez ${pet.name}, un ${pet.baseAnimal} con poderes de ${pet.element}. Un dia ${randomAdventure}. Desde entonces, ${pet.name} cuida Mundo M. Crea tu mascota con una gran sonrisa.`;
 };
 
 const App: React.FC = () => {
@@ -158,7 +158,7 @@ const App: React.FC = () => {
         </div>
       </div>
       <h1 className="text-3xl sm:text-5xl md:text-8xl font-black text-indigo-700 mb-4 md:mb-6 drop-shadow-xl tracking-tight">
-        MUNDO MÁGICO
+        MUNDO M. CREA TU MASCOTA
       </h1>
       <p className="text-lg sm:text-2xl text-indigo-500 mb-8 md:mb-12 max-w-xl font-bold leading-tight">
         ¡Pinta tu dibujo real y observa cómo cobra vida en 3D!
@@ -451,7 +451,7 @@ const App: React.FC = () => {
       <header className="p-2 md:p-4 flex justify-between items-center bg-white/60 backdrop-blur-3xl z-50 border-b-4 md:border-b-8 border-white shadow-lg shrink-0">
         <div className="text-2xl md:text-4xl font-black text-indigo-700 cursor-pointer flex items-center gap-2 md:gap-4 group" onClick={() => setState('HOME')}>
           <Wand2 className="w-8 h-8 md:w-12 md:h-12 text-indigo-600 group-hover:rotate-12 transition-transform duration-500" />
-          <span className="hidden sm:block tracking-tighter">MUNDO MÁGICO</span>
+          <span className="hidden sm:block tracking-tighter">MUNDO M. CREA TU MASCOTA</span>
         </div>
         <div className="flex gap-2 md:gap-4">
           {gallery.length > 0 && (
