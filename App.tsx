@@ -7,7 +7,7 @@ import ColorByNumber from '@/components/ColorByNumber';
 import PlatformerGame from '@/components/PlatformerGame';
 import { soundService } from '@/src/services/soundService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, Wand2, BookOpen } from 'lucide-react';
+import { Volume2, VolumeX, BookOpen } from 'lucide-react';
 
 const SparkleTrail: React.FC = () => {
   const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number }[]>([]);
@@ -151,15 +151,16 @@ const App: React.FC = () => {
 
   const renderHome = () => (
     <div className="flex flex-col items-center justify-center h-full text-center p-4">
-      <div className="relative mb-4 md:mb-8">
-        <span className="text-6xl md:text-9xl float-animation block drop-shadow-2xl">🎨🦁✨</span>
-        <div className="absolute -top-2 -right-2 md:-top-4 md:-right-4 bg-white p-2 md:p-4 rounded-full shadow-lg animate-pulse">
-           <span className="text-xl md:text-4xl">🪄</span>
-        </div>
+      <div className="relative mb-4 md:mb-8 max-w-[min(100%,420px)] md:max-w-xl mx-auto float-animation">
+        <img
+          src="/logo-mundo-magico.png"
+          alt="Mundo Mágico"
+          className="w-full h-auto drop-shadow-2xl select-none"
+          width={512}
+          height={512}
+          draggable={false}
+        />
       </div>
-      <h1 className="text-3xl sm:text-5xl md:text-8xl font-black text-indigo-700 mb-4 md:mb-6 drop-shadow-xl tracking-tight">
-        MUNDO M. CREA TU MASCOTA
-      </h1>
       <p className="text-lg sm:text-2xl text-indigo-500 mb-8 md:mb-12 max-w-xl font-bold leading-tight">
         ¡Pinta tu dibujo real y observa cómo cobra vida en 3D!
       </p>
@@ -450,8 +451,13 @@ const App: React.FC = () => {
       <SparkleTrail />
       <header className="p-2 md:p-4 flex justify-between items-center bg-white/60 backdrop-blur-3xl z-50 border-b-4 md:border-b-8 border-white shadow-lg shrink-0">
         <div className="text-2xl md:text-4xl font-black text-indigo-700 cursor-pointer flex items-center gap-2 md:gap-4 group" onClick={() => setState('HOME')}>
-          <Wand2 className="w-8 h-8 md:w-12 md:h-12 text-indigo-600 group-hover:rotate-12 transition-transform duration-500" />
-          <span className="hidden sm:block tracking-tighter">MUNDO M. CREA TU MASCOTA</span>
+          <img
+            src="/logo-mundo-magico.png"
+            alt=""
+            className="h-10 w-auto md:h-14 object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+            draggable={false}
+          />
+          <span className="hidden sm:block tracking-tighter text-lg md:text-2xl">Crea tu mascota</span>
         </div>
         <div className="flex gap-2 md:gap-4">
           {gallery.length > 0 && (
